@@ -23,6 +23,7 @@ class AppContext:
 async def lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
     setup_logging()
     store = get_store()
+    await store.ensure_index()
     yield AppContext(config=config, store=store)
 
 

@@ -5,7 +5,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 def _get_project_root() -> Path:
     current = Path(__file__).parent
-    while not (current / "uv.lock").exists() and not (current / "pyproject.toml").exists():
+    while (
+        not (current / "uv.lock").exists() and not (current / "pyproject.toml").exists()
+    ):
         if current.parent == current:
             return Path.cwd()
         current = current.parent
@@ -27,6 +29,13 @@ class Config(BaseSettings):
     MCP_NAME: str = ""
     MCP_PUBLIC_URL: str = ""
     AUTH_ENABLED: bool = True
+
+    # ==========================================
+    # Embeddings (semantic search in pytriz)
+    # ==========================================
+    EMBEDDING_MODEL: str = "mxbai-embed-large:335m"
+    EMBEDDING_BASE_URL: str = "http://localhost:11434/v1"
+    EMBEDDING_API_KEY: str = "ollama"
 
     @property
     def mcp_server_url(self) -> str:

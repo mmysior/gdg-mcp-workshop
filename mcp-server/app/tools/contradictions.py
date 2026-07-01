@@ -34,11 +34,11 @@ def browse_contradiction_matrix(
         return f"Error retrieving Inventive Principles: {e}"
 
 
-def search_parameter(query: str, limit: int = 5) -> str:
+async def search_parameter(query: str, limit: int = 5) -> str:
     """Search TRIZ engineering parameters by semantic similarity to a query string."""
     try:
         store = get_store()
-        results = store.search_parameters(query, top_k=limit)
+        results = await store.search_parameters(query, top_k=limit)
         if not results:
             return "No parameters found."
         output = f"Found {len(results)} TRIZ parameter(s):\n\n"
@@ -49,11 +49,11 @@ def search_parameter(query: str, limit: int = 5) -> str:
         return f"Error searching parameters: {e}"
 
 
-def search_principle(query: str, limit: int = 5) -> str:
+async def search_principle(query: str, limit: int = 5) -> str:
     """Search TRIZ Inventive Principles by semantic similarity to a query string."""
     try:
         store = get_store()
-        results = store.search_principles(query, top_k=limit)
+        results = await store.search_principles(query, top_k=limit)
         if not results:
             return "No principles found."
         output = f"Found {len(results)} Inventive Principle(s):\n\n"
