@@ -5,6 +5,7 @@ from dataclasses import dataclass
 import uvicorn
 from mcp.server.fastmcp import FastMCP
 from pytriz import TRIZStore
+from starlette.middleware.cors import CORSMiddleware
 
 from app.core.config import Config, config
 from app.core.logger import setup_logging
@@ -45,4 +46,11 @@ register_tools(mcp)
 
 if __name__ == "__main__":
     app = mcp.streamable_http_app()
+    app = CORSMiddleware(
+        app,
+        allow_origins=["*"],
+        allow_methods=["GET", "POST", "DELETE"],
+        allow_headers=["*"],
+        expose_headers=["Mcp-Session-Id"],
+    )
     uvicorn.run(app, host=config.MCP_HOST, port=config.MCP_PORT)
