@@ -1,0 +1,11 @@
+services:
+  mcp-server:
+    build:
+      context: ./mcp-server
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    environment:
+      MCP_HOST: 0.0.0.0
+    ports:
+      - "8000:8000"
