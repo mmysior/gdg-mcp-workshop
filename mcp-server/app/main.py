@@ -28,7 +28,7 @@ async def lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 
 
 mcp = FastMCP(
-    config.MCP_NAME,
+    "TRIZ MCP Server",
     lifespan=lifespan,
     stateless_http=True,
     json_response=True,

@@ -11,7 +11,7 @@ def get_store() -> TRIZStore:
     if config.EMBEDDING_MODEL:
         embed_model = get_embedder(
             config.EMBEDDING_MODEL,
-            base_url=config.EMBEDDING_BASE_URL,
+            base_url=config.EMBEDDING_SERVICE_URL,
             api_key=config.EMBEDDING_API_KEY,
         )
     return TRIZStore(embed_model=embed_model)
