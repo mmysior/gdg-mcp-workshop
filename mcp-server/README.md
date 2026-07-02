@@ -2,7 +2,7 @@
 
 A Model Context Protocol (MCP) server exposing [pytriz](https://github.com/mmysior/pytriz) TRIZ tools over Streamable HTTP.
 
-## Run locally with uv
+## Run with uv
 
 ```bash
 cp ../.env.example .env   # or create mcp-server/.env directly
@@ -10,25 +10,15 @@ uv sync
 uv run python app/main.py
 ```
 
-The server listens on `http://localhost:8000` (see `MCP_HOST` / `MCP_PORT` in `.env`).
+Server listens on `http://localhost:8123` (see `MCP_HOST` / `MCP_PORT` in `.env`).
 
 ## Run with Docker
 
-From the repo root:
-
 ```bash
-docker compose up --build
+./local_deploy.sh
 ```
 
-This builds the image from `mcp-server/Dockerfile` and exposes the server on `http://localhost:8000`.
-
-To build/run the container directly instead:
-
-```bash
-cd mcp-server
-docker build -t triz-mcp-server .
-docker run --rm -p 8000:8000 --env-file ../.env triz-mcp-server
-```
+Builds the image, runs it detached, and prints the server URL, logs command, and stop command.
 
 ## Test with MCP Inspector
 
@@ -41,6 +31,20 @@ npx @modelcontextprotocol/inspector
 In the Inspector UI, connect using:
 
 - **Transport:** Streamable HTTP
-- **URL:** `http://localhost:8000/mcp`
+- **URL:** `http://localhost:8123/mcp`
 
 You should see the registered tools (contradiction matrix lookup, parameter/principle search, etc.) and can invoke them directly from the UI.
+
+## Add to LM Studio
+
+With the server running, open the "Program" tab in LM Studio's right sidebar, then `Install > Edit mcp.json`, and add:
+
+```json
+{
+  "mcpServers": {
+    "triz-mcp-server": {
+      "url": "http://localhost:8123/mcp"
+    }
+  }
+}
+```
