@@ -218,3 +218,36 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+.nx/installation
+.nx/cache
+.nx/workspace-data
+.nx/self-healing
+.nx/migrate-runs
+.nx/polygraph
+.claude/worktrees
+.claude/settings.local.json
+.angular
+
+__screenshots__
+
+# ==========================================
+# Node & Nx Workspace
+# ==========================================
+node_modules/
+.nx/
+nx
+nx.bat
+
+# ==========================================
+# Editor & IDE Local Folders
+# ==========================================
+.vscode/
+.idea/
+
+# ==========================================
+# Gemini & ADK CLI Caches
+# ==========================================
+.gemini/
+.agents/
+.claude/
+
