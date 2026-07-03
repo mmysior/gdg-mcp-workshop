@@ -53,7 +53,8 @@ This hands-on workshop takes you through building, orchestrating, and deploying 
 To ensure a fault-proof deployment, we will build this architecture using an **Assembly Line** approach. For each microservice, you will:
 1. Run it locally on your machine.
 2. Test it locally to verify it connects successfully to the *previously deployed* cloud component.
-3. Deploy it to Google Cloud Run.
+3. Build only that service's container in the cloud.
+4. Deploy only that service to Google Cloud Run.
 
 We have provided a unified `Makefile` to handle all complex `gcloud` invocations.
 
@@ -76,9 +77,6 @@ make gcp-create-registry GCP_PROJECT=$GCP_PROJECT REGION=$REGION
 # 4. Provision Cloud SQL PostgreSQL (Takes 4-6 minutes)
 export DB_PASSWORD="inventapassword"
 make gcp-create-db GCP_PROJECT=$GCP_PROJECT REGION=$REGION DB_PASSWORD=$DB_PASSWORD
-
-# 5. Package all code into Docker Containers in the cloud!
-make build-all GCP_PROJECT=$GCP_PROJECT REGION=$REGION
 ```
 
 ---
@@ -101,7 +99,13 @@ curl -X POST http://localhost:8000/mcp -H "Content-Type: application/json" -H "A
 ```
 *(You should see a JSON response listing `browse_contradiction_matrix` and other tools. Kill the local server with `Ctrl+C` when done).*
 
-**3. Deploy to GCP:**
+**3. Build Container Image (Cloud Build):**
+Compile and push *only* the TRIZ MCP server image in seconds:
+```bash
+make build-mcp GCP_PROJECT=$GCP_PROJECT REGION=$REGION
+```
+
+**4. Deploy to GCP:**
 ```bash
 make deploy-mcp GCP_PROJECT=$GCP_PROJECT REGION=$REGION
 ```
@@ -141,7 +145,13 @@ curl -X POST http://localhost:8081/run -H "Content-Type: application/json" -d '{
 ```
 *(You should see a massive JSON response containing the TRIZ principles retrieved from the cloud!).*
 
-**3. Deploy to GCP (Forcing 1 Warm Instance):**
+**3. Build Container Image (Cloud Build):**
+Compile and push *only* the ADK Agent image in seconds:
+```bash
+make build-agent GCP_PROJECT=$GCP_PROJECT REGION=$REGION
+```
+
+**4. Deploy to GCP (Forcing 1 Warm Instance):**
 ```bash
 make deploy-agent GCP_PROJECT=$GCP_PROJECT REGION=$REGION
 ```
@@ -176,7 +186,13 @@ curl -X POST http://localhost:3000/api/solve -H "Content-Type: application/json"
 }'
 ```
 
-**4. Deploy to GCP (Forcing 1 Warm Instance):**
+**4. Build Container Image (Cloud Build):**
+Compile and push *only* the NestJS backend image in seconds:
+```bash
+make build-backend GCP_PROJECT=$GCP_PROJECT REGION=$REGION
+```
+
+**5. Deploy to GCP (Forcing 1 Warm Instance):**
 *(Kill your local servers).*
 ```bash
 make deploy-backend GCP_PROJECT=$GCP_PROJECT REGION=$REGION DB_PASSWORD=$DB_PASSWORD
@@ -197,7 +213,13 @@ npx nx serve frontend
 Open **`http://localhost:4200`** in your browser.
 Click the **⚙️ Settings** gear in the top right, and paste your deployed Backend URL (e.g., `https://buildwithai-backend-xxxx.a.run.app/api`). Click "Apply" and submit a contradiction on the screen!
 
-**3. Deploy to GCP (Forcing 1 Warm Instance):**
+**3. Build Container Image (Cloud Build):**
+Compile and push *only* the Angular Frontend image in seconds:
+```bash
+make build-frontend GCP_PROJECT=$GCP_PROJECT REGION=$REGION
+```
+
+**4. Deploy to GCP (Forcing 1 Warm Instance):**
 ```bash
 make deploy-frontend GCP_PROJECT=$GCP_PROJECT REGION=$REGION
 ```
