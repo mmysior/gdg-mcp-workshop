@@ -30,8 +30,6 @@ async def lifespan(server: FastMCP) -> AsyncIterator[AppContext]:
 mcp = FastMCP(
     config.MCP_NAME,
     lifespan=lifespan,
-    stateless_http=True,
-    json_response=True,
     transport_security=TransportSecuritySettings(enable_dns_rebinding_protection=False),
 )
 

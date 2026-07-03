@@ -50,7 +50,12 @@
       >
         <div class="message-bubble">
           <!-- Text Advice body -->
-          <div class="message-text">{{ msg.text }}</div>
+          <div class="message-text" [innerHTML]="renderMarkdown(msg.text)"></div>
+          
+          <!-- Debug Raw Fallback Bridge -->
+          <div *ngIf="msg.sender === 'assistant' && msg.id" style="color: #ef4444; font-size: 13px; margin-top: 10px; font-family: monospace; border-top: 1px dashed rgba(239, 68, 68, 0.3); padding-top: 8px;">
+            [DEBUG RAW ADVICE]: {{ msg.text }}
+          </div>
 
           <!-- Embedded TRIZ details if this response called the MCP server -->
           <div *ngIf="msg.principles && msg.principles.length > 0" class="embedded-principles">
@@ -131,7 +136,7 @@
             <strong>Prompt:</strong> {{ log.problemDescription }}
           </div>
           <div class="log-response">
-            <strong>Response Summary:</strong> {{ log.advice.length > 160 ? (log.advice | slice:0:160) + '...' : log.advice }}
+            <strong>Response Summary:</strong> {{ log.advice && log.advice.length > 160 ? (log.advice | slice:0:160) + '...' : (log.advice || '') }}
           </div>
         </div>
       </div>

@@ -18,7 +18,7 @@ AGENT_IMAGE    = $(REGISTRY_URL)/triz-adk-agent:latest
 BACKEND_IMAGE  = $(REGISTRY_URL)/buildwithai-backend:latest
 FRONTEND_IMAGE = $(REGISTRY_URL)/buildwithai-frontend:latest
 
-.PHONY: help install-tools install-deps gcp-init gcp-enable-apis gcp-create-registry gcp-create-db build-all deploy-mcp deploy-agent deploy-backend deploy-frontend show-urls
+.PHONY: help install-tools install-deps gcp-init gcp-enable-apis gcp-create-registry gcp-create-db build-mcp build-agent build-backend build-frontend build-all deploy-mcp deploy-agent deploy-backend deploy-frontend show-urls gcp-cleanup
 
 help:
 	@echo "=========================================================================="
@@ -40,21 +40,22 @@ help:
 	@echo "Step 3: Spin up Cloud SQL PostgreSQL:"
 	@echo "  make gcp-create-db"
 	@echo ""
-	# Step 4: Individual Container Build Targets (Cloud Build)
-	build-mcp:
-		gcloud builds submit --tag=$(MCP_IMAGE) ./mcp-server
-
-	build-agent:
-		gcloud builds submit --tag=$(AGENT_IMAGE) ./adk-agents
-
-	build-backend:
-		@echo 'steps:\n  - name: "gcr.io/cloud-builders/docker"\n    args: ["build", "-f", "apps/backend/Dockerfile", "-t", "$(BACKEND_IMAGE)", "."]\n    env: ["DOCKER_BUILDKIT=1"]\nimages:\n  - "$(BACKEND_IMAGE)"' | gcloud builds submit --config=-
-
-	build-frontend:
-		@echo 'steps:\n  - name: "gcr.io/cloud-builders/docker"\n    args: ["build", "-f", "apps/frontend/Dockerfile", "-t", "$(FRONTEND_IMAGE)", "."]\n    env: ["DOCKER_BUILDKIT=1"]\nimages:\n  - "$(FRONTEND_IMAGE)"' | gcloud builds submit --config=-
-
-	# Legacy target to build everything at once
-	build-all: build-mcp build-agent build-backend build-frontend
+	@echo "Step 4: Build individual services:"
+	@echo "  make build-mcp         (Build only MCP Server)"
+	@echo "  make build-agent       (Build only ADK Agent)"
+	@echo "  make build-backend     (Build only NestJS Backend)"
+	@echo "  make build-frontend    (Build only Angular Frontend)"
+	@echo "  make build-all         (Build all four services)"
+	@echo ""
+	@echo "Step 5: Deploy containers one-by-one to Cloud Run:"
+	@echo "  make deploy-mcp        (Private TRIZ MCP Server)"
+	@echo "  make deploy-agent      (Private ADK Agent)"
+	@echo "  make deploy-backend    (NestJS Backend connected to Database)"
+	@echo "  make deploy-frontend   (Angular Frontend served via Nginx)"
+	@echo ""
+	@echo "Utility Targets:"
+	@echo "  make show-urls         (Retrieve URLs of deployed Cloud Run services)"
+	@echo "=========================================================================="
 
 # Install uv package manager dynamically depending on OS
 install-tools:
@@ -112,10 +113,27 @@ gcp-create-db:
 	@echo "Creating Database $(DB_NAME)..."
 	gcloud sql databases create $(DB_NAME) --instance=$(DB_INSTANCE)
 
-# Build & push all images to Artifact Registry using Cloud Build
-build-all-legacy:
-	gcloud builds submit --config=cloudbuild.yaml \
-		--substitutions=_PROJECT_ID=$(GCP_PROJECT),_REGION=$(REGION),_REGISTRY_NAME=$(REGISTRY_NAME)
+# ==========================================================================
+# Individual Container Build Targets (Cloud Build)
+# ==========================================================================
+
+build-mcp:
+	gcloud builds submit --config=build-mcp.yaml
+
+build-agent:
+	gcloud builds submit --config=build-agent.yaml
+
+build-backend:
+	gcloud builds submit --config=build-backend.yaml
+
+build-frontend:
+	gcloud builds submit --config=build-frontend.yaml
+
+build-all: build-mcp build-agent build-backend build-frontend
+
+# ==========================================================================
+# Deployment Targets (Cloud Run)
+# ==========================================================================
 
 # Deploy TRIZ MCP Server (Private internal microservice)
 deploy-mcp:
@@ -198,4 +216,3 @@ gcp-cleanup:
 	@echo "Deleting Artifact Registry $(REGISTRY_NAME)..."
 	-gcloud artifacts repositories delete $(REGISTRY_NAME) --location=$(REGION) --quiet
 	@echo "Takedown completed!"
-

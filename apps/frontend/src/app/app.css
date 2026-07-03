@@ -557,3 +557,41 @@
   0%, 80%, 100% { transform: scale(0); }
   40% { transform: scale(1.0); }
 }
+
+/* ==========================================
+   Markdown Elements Styling Override
+   ========================================== */
+.md-h2 {
+  font-size: 1.35em;
+  font-weight: 800;
+  color: #38bdf8;
+  margin-top: 20px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid #334155;
+  padding-bottom: 4px;
+}
+
+.md-h3 {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: #818cf8;
+  margin-top: 16px;
+  margin-bottom: 8px;
+}
+
+.md-h4 {
+  font-size: 1.10em;
+  font-weight: 700;
+  color: #cbd5e1;
+  margin-top: 14px;
+  margin-bottom: 6px;
+}
+
+.md-li {
+  margin-left: 20px;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  line-height: 1.5;
+  color: #cbd5e1;
+}
+
